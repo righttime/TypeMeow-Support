@@ -620,10 +620,11 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   win.addEventListener('pointerdown', function(e){
     e.preventDefault();  // 모바일 스크롤/줌 간섭 방지
     var r = win.getBoundingClientRect(), hr = hero.getBoundingClientRect();
-    // right 기반 → left 기반으로 즉시 변환 (모바일 점프 방지)
+    // right/transform 기반 → left 기반으로 즉시 변환 (모바일 점프 방지)
     win.style.left = (r.left - hr.left) + 'px';
     win.style.top = (r.top - hr.top) + 'px';
     win.style.right = 'auto';
+    win.style.transform = 'none';  // 모바일 translateX(-50%) 제거 안 하면 반 칸 밀림
     drag = { ox: e.clientX - r.left, oy: e.clientY - r.top, hr: hr };
     win.setPointerCapture(e.pointerId);
     win.classList.add('dragging');
