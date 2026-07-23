@@ -496,12 +496,16 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
 
   /* ── pet frame engine — same naming as the app's currentAssetName() ── */
   var STATES = ['idle','idle_1','left','left_crazy','left_hard','right','right_crazy','right_hard'];
-  ['cat','frog','siba'].forEach(function(a){
+  var preloaded = {};
+  function preloadAnimal(a){
+    if (preloaded[a]) return;
+    preloaded[a] = true;
     STATES.forEach(function(s){
       new Image().src = 'assets/' + a + '_' + s + '.png';
       new Image().src = 'assets/' + a + '_icon_' + s + '.png';
     });
-  });
+  }
+  preloadAnimal('cat');  // 초기 동물만 프리로드 (나머지는 전환 시 lazy)
 
   var animal = 'cat';
   function frameSrc(set, st){
@@ -614,7 +618,12 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   /* ── draggable floating preview ── */
   var win = $('floatWin'), hero = document.querySelector('.float-zone'), drag = null;
   win.addEventListener('pointerdown', function(e){
+    e.preventDefault();  // 모바일 스크롤/줌 간섭 방지
     var r = win.getBoundingClientRect(), hr = hero.getBoundingClientRect();
+    // right 기반 → left 기반으로 즉시 변환 (모바일 점프 방지)
+    win.style.left = (r.left - hr.left) + 'px';
+    win.style.top = (r.top - hr.top) + 'px';
+    win.style.right = 'auto';
     drag = { ox: e.clientX - r.left, oy: e.clientY - r.top, hr: hr };
     win.setPointerCapture(e.pointerId);
     win.classList.add('dragging');
@@ -685,6 +694,7 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   document.querySelectorAll('.animal-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       animal = btn.dataset.animal;
+      preloadAnimal(animal);  // 전환 시 lazy 로드
       document.querySelectorAll('.animal-btn').forEach(function(b){
         b.classList.toggle('active', b === btn);
         b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
