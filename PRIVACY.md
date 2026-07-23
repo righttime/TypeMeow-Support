@@ -69,7 +69,7 @@ If this policy changes, the updated version will be posted here with a revised "
 ## Contact
 
 For privacy concerns or questions:
-- 📧 [Open an Issue](https://github.com/hk-neo/TypeMeow-Support/issues)
+- 📧 [Open an Issue](https://github.com/righttime/TypeMeow-Support/issues)
 
 ---
 

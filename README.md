@@ -26,7 +26,7 @@ No pop-ups. No badges. No annoying notifications. Just a quiet friend working al
 
 ## Need Help? Found a Bug? Have an Idea?
 
-👉 **[Open an Issue](https://github.com/hk-neo/TypeMeow-Support/issues/new/choose)**
+👉 **[Open an Issue](https://github.com/righttime/TypeMeow-Support/issues/new/choose)**
 
 We welcome:
 - 🐛 **Bug reports** — something not working right?
@@ -64,8 +64,8 @@ For the full privacy policy, see [PRIVACY.md](PRIVACY.md).
 
 ## Links
 
-- 🏠 [Product Website](https://hk-neo.github.io/TypeMeow-Support/) *(coming soon)*
-- 📧 Support: [Open an Issue](https://github.com/hk-neo/TypeMeow-Support/issues)
+- 🏠 [Product Website](https://righttime.github.io/TypeMeow-Support/) *(coming soon)*
+- 📧 Support: [Open an Issue](https://github.com/righttime/TypeMeow-Support/issues)
 
 ---
 
