@@ -79,9 +79,11 @@ body.mode-hard .kpm-chip{color:#1c130a;background:var(--amber);border-color:var(
 body.mode-crazy .kpm-chip{color:#fff;background:var(--red);border-color:var(--red);animation:pulse .5s infinite}
 @keyframes pulse{50%{transform:scale(1.12)}}
 .mb-pet{position:relative;height:24px;width:36px;flex:none;display:flex;align-items:center;justify-content:center}
-/* 1-bit 아이콘 → 흰색 강제 (macOS 다크 메뉴바 template 효과) */
-.mb-pet .pet-img{height:22px;width:auto;filter:brightness(0) invert(1);transition:filter 1s ease}
-.mb-pet.is-idle .pet-img{filter:brightness(0) invert(1) opacity(.55)}
+/* 1-bit 아이콘 — 프레임별 색 자동 감지 (JS가 mono-dark/mono-light 클래스 부여) */
+.mb-pet .pet-img{height:22px;width:auto;transition:opacity 1s ease}
+.mb-pet .pet-img.mono-dark{filter:brightness(0) invert(1)}        /* 어두운 프레임 → 흰색 강제 */
+.mb-pet .pet-img.mono-light{filter:drop-shadow(0 0 1.5px rgba(0,0,0,.35))}  /* 흰 프레임 → 라이트 배경 대비용 윤곽 */
+.mb-pet.is-idle .pet-img{opacity:.55}
 .mb-heart{position:absolute;top:-4px;left:-4px;width:13px;height:13px;fill:var(--red);opacity:0;transform:scale(0);transition:transform .35s cubic-bezier(.34,1.6,.5,1),opacity .3s;z-index:2}
 body.pomo-rest .mb-heart{opacity:1;transform:scale(1)}
 #mbClock{font-size:12.5px}
@@ -520,10 +522,33 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
     {img:$('pgPetImg'), box:$('pgPet'), set:'detail'},
     {img:$('fwPetImg'), box:$('fwPet'), set:'detail'}
   ];
+  /* 모노 아이콘 프레임별 평균 휘도 감지 → 어두운 프레임만 흰색 반전 */
+  function normalizeMono(img){
+    try{
+      var c = document.createElement('canvas');
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      var ctx = c.getContext('2d', {willReadFrequently:true});
+      ctx.drawImage(img, 0, 0);
+      var d = ctx.getImageData(0, 0, c.width, c.height).data;
+      var lumSum = 0, n = 0;
+      for (var i = 0; i < d.length; i += 4){
+        if (d[i+3] > 128){ lumSum += (d[i] + d[i+1] + d[i+2]) / 3; n++; }
+      }
+      var avg = n ? lumSum / n : 255;
+      img.classList.toggle('mono-dark', avg < 140);
+      img.classList.toggle('mono-light', avg >= 140);
+    }catch(e){ /* CORS etc — 그냥 표시 */ }
+  }
   function renderLive(){
     livePets.forEach(function(p){
       var src = 'assets/' + frameSrc(p.set, live);
-      if (p.img.getAttribute('src') !== src) p.img.src = src;
+      if (p.img.getAttribute('src') !== src){
+        p.img.src = src;
+        if (p.set === 'icon' && !p.img.dataset.normalized){
+          p.img.dataset.normalized = '1';
+          p.img.addEventListener('load', function(){ normalizeMono(p.img); }, {once:true});
+        }
+      }
       p.box.classList.toggle('is-idle', !live.typing);
       p.box.classList.toggle('mode-hard', live.typing && live.mode==='hard');
       p.box.classList.toggle('mode-crazy', live.typing && live.mode==='crazy');
