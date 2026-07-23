@@ -64,7 +64,7 @@ For the full privacy policy, see [PRIVACY.md](PRIVACY.md).
 
 ## Links
 
-- 🏠 [Product Website](https://righttime.github.io/TypeMeow-Support/) *(coming soon)*
+- 🏠 [Product Website](https://righttime.github.io/TypeMeow-Support/)
 - 📧 Support: [Open an Issue](https://github.com/righttime/TypeMeow-Support/issues)
 
 ---
