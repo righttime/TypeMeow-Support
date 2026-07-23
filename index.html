@@ -497,12 +497,21 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   /* ── pet frame engine — same naming as the app's currentAssetName() ── */
   var STATES = ['idle','idle_1','left','left_crazy','left_hard','right','right_crazy','right_hard'];
   var preloaded = {};
+  var imgCache = {};  // Image 객체 영구 보유 — GC 방지 + 메모리 캐시 유지
+  function getAsset(name){
+    if (!imgCache[name]){
+      var img = new Image();
+      img.src = 'assets/' + name;
+      imgCache[name] = img;
+    }
+    return imgCache[name].src;
+  }
   function preloadAnimal(a){
     if (preloaded[a]) return;
     preloaded[a] = true;
     STATES.forEach(function(s){
-      new Image().src = 'assets/' + a + '_' + s + '.png';
-      new Image().src = 'assets/' + a + '_icon_' + s + '.png';
+      getAsset(a + '_' + s + '.png');
+      getAsset(a + '_icon_' + s + '.png');
     });
   }
   preloadAnimal('cat');  // 초기 동물만 프리로드 (나머지는 전환 시 lazy)
@@ -515,6 +524,10 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
       return prefix + (st.frame === 1 ? 'left' : 'right') + suf + '.png';
     }
     return prefix + (st.blink === 0 ? 'idle' : 'idle_1') + '.png';
+  }
+  function setImg(el, name){
+    var src = getAsset(name);
+    if (el.getAttribute('src') !== src) el.src = src;
   }
 
   /* live pets driven by the visitor's real typing: menu bar, playground, float window */
@@ -545,7 +558,7 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   }
   function renderLive(){
     livePets.forEach(function(p){
-      var src = 'assets/' + frameSrc(p.set, live);
+      var src = getAsset(frameSrc(p.set, live));
       if (p.img.getAttribute('src') !== src){
         p.img.src = src;
         if (p.set === 'icon' && !p.img.dataset.normalized){
@@ -653,11 +666,11 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
     document.body.classList.toggle('pomo-rest', resting);
     pomoPet.classList.toggle('show-heart', resting);
     if (!resting){
-      if (wasResting){ pomoImg.src = 'assets/' + animal + '_idle.png'; wasResting = false; }
+      if (wasResting){ setImg(pomoImg, animal + '_idle.png'); wasResting = false; }
       pomoBar.style.width = (t/WORK*100) + '%';
       pomoStatus.textContent = 'Focus · ' + fmt(Math.ceil((1 - t/WORK) * 25 * 60));
     } else {
-      if (!wasResting){ pomoImg.src = 'assets/' + animal + '_idle.png'; wasResting = true; }
+      if (!wasResting){ setImg(pomoImg, animal + '_idle.png'); wasResting = true; }
       var f = (t - WORK) / (CYCLE - WORK);
       pomoBar.style.width = ((1-f)*100) + '%';
       pomoStatus.textContent = 'Resting · ' + fmt(Math.ceil((1 - f) * 5 * 60));
@@ -668,7 +681,7 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
     var t = (Date.now() - pomoStart) % CYCLE;
     if (t < WORK){
       pomoFrame = pomoFrame === 1 ? 2 : 1;
-      pomoImg.src = 'assets/' + animal + '_' + (pomoFrame === 1 ? 'left' : 'right') + '.png';
+      setImg(pomoImg, animal + '_' + (pomoFrame === 1 ? 'left' : 'right') + '.png');
     }
   }, 300);
 
@@ -681,7 +694,7 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
     stageMode = phase >= 34 ? 'crazy' : phase >= 24 ? 'hard' : 'normal';
     stageFrame = stageFrame === 1 ? 2 : 1;
     var suf = stageMode === 'crazy' ? '_crazy' : stageMode === 'hard' ? '_hard' : '';
-    stageImg.src = 'assets/' + animal + '_' + (stageFrame === 1 ? 'left' : 'right') + suf + '.png';
+    setImg(stageImg, animal + '_' + (stageFrame === 1 ? 'left' : 'right') + suf + '.png');
     $('stagePet').classList.toggle('mode-hard', stageMode === 'hard');
     $('stagePet').classList.toggle('mode-crazy', stageMode === 'crazy');
   }, 260);
