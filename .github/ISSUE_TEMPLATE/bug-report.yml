@@ -1,0 +1,68 @@
+name: 🐛 Bug Report
+description: Something not working right? Tell us!
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! 🐱
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly.
+      placeholder: "The cat stopped moving after I switched animals..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+      placeholder: "The cat should keep moving when I type..."
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we see this bug?
+      placeholder: |
+        1. Open TypeMeow
+        2. Switch animal to Frog
+        3. Start typing
+        4. ...
+
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      description: Apple menu → About This Mac
+      placeholder: "macOS 14.5 (Sonoma)"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: TypeMeow version
+      description: Settings → About tab
+      placeholder: "v1.0.0"
+
+  - type: dropdown
+    id: animal
+    attributes:
+      label: Which animal?
+      options:
+        - Cat 🐱
+        - Frog 🐸
+        - Siba 🐕
+        - All / N/A
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Screen recording
+      description: If applicable, drag images or videos here.

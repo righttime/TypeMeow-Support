@@ -1,0 +1,37 @@
+name: 💡 Feature Request
+description: Want something new? Let us know!
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea for TypeMeow? We'd love to hear it! 💡
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the feature or improvement.
+      placeholder: "It would be cool if the cat wore a tiny hat during Pomodoro breaks..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would this be useful?
+      description: What problem does this solve, or what joy does it bring?
+      placeholder: "Because hats are cute and I need more cuteness while coding."
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - New animal 🐾
+        - Visual / Animation 🎨
+        - Pomodoro / Breaks ⏱️
+        - Statistics / Data 📊
+        - Settings / UX ⚙️
+        - Other

@@ -1,0 +1,17 @@
+name: ❓ Question
+description: Anything unclear? Ask away!
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No question is too small — ask away! 🐱
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      placeholder: "How do I enable Input Monitoring permission?"
+    validations:
+      required: true
