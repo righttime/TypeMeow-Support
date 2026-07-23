@@ -57,7 +57,7 @@ body{
 .menubar{
   position:sticky;top:0;z-index:50;
   display:flex;align-items:center;gap:18px;
-  height:32px;padding:0 16px;
+  height:34px;padding:0 16px;
   background:rgba(25,18,16,.74);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border-bottom:1px solid rgba(244,233,218,.07);
@@ -78,10 +78,27 @@ body{
 body.mode-hard .kpm-chip{color:#1c130a;background:var(--amber);border-color:var(--amber)}
 body.mode-crazy .kpm-chip{color:#fff;background:var(--red);border-color:var(--red);animation:pulse .5s infinite}
 @keyframes pulse{50%{transform:scale(1.12)}}
-.mb-pet{width:26px;height:20px;position:relative;flex:none}
-.mb-heart{position:absolute;top:-5px;left:-7px;width:13px;height:13px;fill:var(--red);opacity:0;transform:scale(0);transition:transform .35s cubic-bezier(.34,1.6,.5,1),opacity .3s}
+.mb-pet{position:relative;height:24px;width:36px;flex:none;display:flex;align-items:center;justify-content:center}
+/* 1-bit 아이콘 → 흰색 강제 (macOS 다크 메뉴바 template 효과) */
+.mb-pet .pet-img{height:22px;width:auto;filter:brightness(0) invert(1);transition:filter 1s ease}
+.mb-pet.is-idle .pet-img{filter:brightness(0) invert(1) opacity(.55)}
+.mb-heart{position:absolute;top:-4px;left:-4px;width:13px;height:13px;fill:var(--red);opacity:0;transform:scale(0);transition:transform .35s cubic-bezier(.34,1.6,.5,1),opacity .3s;z-index:2}
 body.pomo-rest .mb-heart{opacity:1;transform:scale(1)}
 #mbClock{font-size:12.5px}
+
+/* ── pet <img> machinery ── */
+.pet-box{position:relative;display:flex;align-items:center;justify-content:center}
+.pet-img{width:100%;height:auto;user-select:none;-webkit-user-drag:none;transition:filter 1.2s ease}
+.pet-box.is-idle .pet-img{filter:saturate(.1) opacity(.72)}
+.pet-box.mode-hard .pet-img{filter:drop-shadow(0 0 16px rgba(255,181,71,.5))}
+.pet-box.mode-crazy .pet-img{filter:drop-shadow(0 0 20px rgba(255,93,93,.65))}
+.pet-box.mode-crazy{animation:shake .16s infinite}
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(1.5px,-1px)}75%{transform:translate(-1.5px,1px)}}
+.heart-badge{position:absolute;top:2%;left:4%;width:16%;height:auto;fill:var(--red);opacity:0;transform:scale(0);transition:transform .4s cubic-bezier(.34,1.7,.5,1),opacity .3s;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4))}
+.show-heart .heart-badge{opacity:1;transform:scale(1)}
+.zzz{position:absolute;top:-4%;right:12%;font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--ink-dim);opacity:0;pointer-events:none}
+.show-zzz .zzz{animation:zz 2.4s ease-in-out infinite}
+@keyframes zz{0%{opacity:0;transform:translateY(6px) scale(.7)}40%{opacity:.9}100%{opacity:0;transform:translateY(-30px) scale(1.2)}}
 
 /* ── shared ── */
 main{max-width:1160px;margin:0 auto;padding:0 28px}
@@ -97,25 +114,6 @@ h2 em,h1 em{font-style:normal;color:var(--amber);text-decoration:underline wavy 
 p.lede{color:var(--ink-dim);font-size:1.16rem;max-width:56ch}
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
 .reveal.in{opacity:1;transform:none}
-
-/* ── pet SVG machinery ── */
-.pet{display:none;width:100%;height:100%}
-body[data-animal="cat"] .pet-cat,body[data-animal="frog"] .pet-frog,body[data-animal="siba"] .pet-siba{display:block}
-.pet .eye{transform-box:fill-box;transform-origin:center}
-.pet .paw-a,.pet .paw-b{transform-box:fill-box;transform-origin:center}
-.pet-wrap{position:relative}
-.is-typing .paw-a{animation:pawA .26s ease-in-out infinite}
-.is-typing .paw-b{animation:pawB .26s ease-in-out infinite}
-@keyframes pawA{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes pawB{0%,100%{transform:translateY(-8px)}50%{transform:translateY(0)}}
-.is-idle .pet{filter:saturate(.12) opacity(.72);transition:filter 1.4s ease}
-.pet{transition:filter .5s ease}
-.is-idle .eye{animation:blink 3.2s infinite}
-@keyframes blink{0%,91%,100%{transform:scaleY(1)}94%{transform:scaleY(.06)}}
-body.mode-hard .pg-pet .pet{filter:drop-shadow(0 0 14px rgba(255,181,71,.55))}
-body.mode-crazy .pg-pet .pet{filter:drop-shadow(0 0 18px rgba(255,93,93,.7))}
-body.mode-crazy .pg-pet{animation:shake .16s infinite}
-@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(1.5px,-1px)}75%{transform:translate(-1.5px,1px)}}
 
 /* ── hero ── */
 .hero{
@@ -141,22 +139,17 @@ body.mode-crazy .pg-pet{animation:shake .16s infinite}
 /* floating draggable preview window */
 .float-zone{position:relative;height:460px}
 .float-win{
-  position:absolute;right:24px;top:60px;width:280px;cursor:grab;
+  position:absolute;right:24px;top:60px;width:290px;cursor:grab;
   user-select:none;touch-action:none;
   filter:drop-shadow(0 26px 50px rgba(0,0,0,.55));
   transition:filter .3s;
 }
 .float-win.dragging{cursor:grabbing;filter:drop-shadow(0 36px 66px rgba(0,0,0,.7))}
-.float-win .pet-box{width:280px;height:200px;position:relative}
-.float-win .fw-heart{position:absolute;top:2px;left:6px;width:30px;height:30px;fill:var(--red);opacity:0;transform:scale(0);transition:transform .4s cubic-bezier(.34,1.7,.5,1),opacity .3s}
-body.pomo-rest .fw-heart{opacity:1;transform:scale(1)}
+.float-win .pet-box{width:290px}
 .float-win .caption{
   text-align:center;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
-  margin-top:6px;letter-spacing:.06em;
+  margin-top:8px;letter-spacing:.06em;
 }
-.float-win .zzz{position:absolute;top:-6px;right:30px;font-family:var(--display);font-weight:800;color:var(--ink-dim);opacity:0}
-body.pomo-rest .zzz{animation:zz 2.4s ease-in-out infinite}
-@keyframes zz{0%{opacity:0;transform:translateY(6px) scale(.7)}40%{opacity:.9}100%{opacity:0;transform:translateY(-26px) scale(1.15)}}
 
 /* ── playground ── */
 .playground{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:start}
@@ -191,8 +184,7 @@ body.mode-hard #modeBadge{color:#1c130a;background:var(--amber);border-color:var
 body.mode-crazy #modeBadge{color:#fff;background:var(--red);border-color:var(--red)}
 .gauge{height:8px;border-radius:99px;background:#120d0b;margin:22px 0 30px;overflow:hidden;border:1px solid var(--line)}
 .gauge-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--amber) 55%,var(--red));transition:width .25s ease}
-.pg-pet{height:190px;display:flex;align-items:flex-end;justify-content:center}
-.pg-pet .pet-box{width:250px;height:180px}
+.pg-pet .pet-box{width:100%;max-width:340px;margin:0 auto}
 
 /* ── pomodoro ── */
 .pomo{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
@@ -214,9 +206,8 @@ body.mode-crazy #modeBadge{color:#fff;background:var(--red);border-color:var(--r
 .pomo-bar-fill{height:100%;width:0%;background:var(--amber);border-radius:99px;transition:width .15s linear,background .4s}
 .pomo-demo.resting .pomo-bar-fill{background:var(--red)}
 .pomo-cat-row{display:flex;justify-content:center;margin-top:26px}
-.pomo-cat-row .pet-box{width:170px;height:125px}
-.pomo-demo.resting .eye{transform:scaleY(.06)}
-.pomo-demo.resting .paw-a,.pomo-demo.resting .paw-b{opacity:0;transition:opacity .4s}
+.pomo-cat-row .pet-box{width:230px}
+.pomo-demo.resting .pet-img{filter:saturate(.1) opacity(.7)}
 .pomo-cap{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);text-align:center;margin-top:12px;letter-spacing:.08em}
 
 /* ── animals ── */
@@ -233,13 +224,13 @@ body.mode-crazy #modeBadge{color:#fff;background:var(--red);border-color:var(--r
 .animal-btn .a-emoji{font-size:24px}
 .animal-stage{
   background:var(--panel);border:1px solid var(--line);border-radius:22px;
-  padding:44px;min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:44px;min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   position:relative;overflow:hidden;
 }
 .animal-stage::after{content:'';position:absolute;inset:auto -40px -70px -40px;height:160px;background:radial-gradient(ellipse at center,rgba(255,181,71,.12),transparent 70%)}
-.animal-stage .pet-box{width:270px;height:195px}
-#animalName{font-family:var(--display);font-weight:800;font-size:2rem;margin-top:18px;letter-spacing:.01em}
-#animalFlavor{font-family:var(--mono);font-size:13px;color:var(--ink-dim);margin-top:8px;text-align:center;max-width:34ch}
+.animal-stage .pet-box{width:min(340px,80%)}
+#animalName{font-family:var(--display);font-weight:800;font-size:2rem;margin-top:22px;letter-spacing:.01em}
+#animalFlavor{font-family:var(--mono);font-size:13px;color:var(--ink-dim);margin-top:8px;text-align:center;max-width:38ch}
 
 /* ── privacy ── */
 .privacy{background:var(--panel-deep);border-block:1px solid var(--line);margin:0 -28px;padding:96px 28px}
@@ -301,7 +292,7 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
 }
 </style>
 </head>
-<body data-animal="cat">
+<body>
 
 <!-- shared SVG defs -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -334,14 +325,9 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   <span class="spacer"></span>
   <span class="right">
     <span class="kpm-chip" id="mbKpm" title="Your live KPM — type anywhere!">000</span>
-    <span class="mb-pet pet-wrap" id="mbPet" aria-hidden="true">
-      <!-- cat -->
-      <svg class="pet pet-cat" viewBox="0 0 140 100"><g fill="#f4e9da"><path d="M112 74 C134 66 134 40 118 34" fill="none" stroke="#f4e9da" stroke-width="9" stroke-linecap="round"/><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 24 L43 2 L63 13 Z"/><path d="M92 24 L97 2 L77 13 Z"/></g><ellipse class="eye" cx="60" cy="34" rx="3.4" ry="5" fill="#191210"/><ellipse class="eye" cx="80" cy="34" rx="3.4" ry="5" fill="#191210"/><path d="M66.5 42 h7 l-3.5 4.5 Z" fill="#191210"/><path d="M70 46.5 q0 4.5 -5.5 4.5 M70 46.5 q0 4.5 5.5 4.5" stroke="#191210" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#f4e9da"><ellipse class="paw-a" cx="52" cy="82" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="82" rx="12" ry="9"/></g></svg>
-      <!-- frog -->
-      <svg class="pet pet-frog" viewBox="0 0 140 100"><g fill="#f4e9da"><ellipse cx="70" cy="66" rx="46" ry="28"/><circle cx="48" cy="30" r="15"/><circle cx="92" cy="30" r="15"/></g><circle class="eye" cx="48" cy="28" r="5.5" fill="#191210"/><circle class="eye" cx="92" cy="28" r="5.5" fill="#191210"/><path d="M42 66 Q70 84 98 66" stroke="#191210" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="62" cy="52" r="1.8" fill="#191210"/><circle cx="78" cy="52" r="1.8" fill="#191210"/><g fill="#f4e9da"><ellipse class="paw-a" cx="48" cy="86" rx="12" ry="8"/><ellipse class="paw-b" cx="92" cy="86" rx="12" ry="8"/></g></svg>
-      <!-- siba -->
-      <svg class="pet pet-siba" viewBox="0 0 140 100"><path d="M108 66 C132 58 130 30 112 26" fill="none" stroke="#f4e9da" stroke-width="10" stroke-linecap="round"/><g fill="#f4e9da"><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 22 L40 0 L62 11 Z"/><path d="M92 22 L100 0 L78 11 Z"/></g><ellipse class="eye" cx="60" cy="34" rx="3.2" ry="4.6" fill="#191210"/><ellipse class="eye" cx="80" cy="34" rx="3.2" ry="4.6" fill="#191210"/><path d="M66 43 h8 l-4 5 Z" fill="#191210"/><path d="M70 48 q0 5 -6 5 M70 48 q0 5 6 5" stroke="#191210" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#f4e9da"><ellipse class="paw-a" cx="52" cy="82" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="82" rx="12" ry="9"/></g></svg>
-      <svg class="mb-heart" aria-hidden="true"><use href="#heart-shape"/></svg>
+    <span class="mb-pet pet-box is-idle" id="mbPet" aria-hidden="true">
+      <img class="pet-img" id="mbPetImg" src="assets/cat_icon_idle.png" alt="">
+      <svg class="mb-heart"><use href="#heart-shape"/></svg>
     </span>
     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm-4.6-3.2 2.1 2.1a3.6 3.6 0 0 1 5 0l2.1-2.1a6.6 6.6 0 0 0-9.2 0ZM2.9 12.3l2.1 2.1a9.9 9.9 0 0 1 14 0l2.1-2.1a12.9 12.9 0 0 0-18.2 0Z"/></svg>
     <svg class="icon" viewBox="0 0 28 14" aria-hidden="true"><rect x="1" y="1" width="22" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="3.5" width="13" height="7" rx="1.6"/><rect x="24.5" y="5" width="2.5" height="4" rx="1.2"/></svg>
@@ -370,11 +356,9 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
     <!-- draggable "big preview" window -->
     <div class="float-zone">
       <div class="float-win" id="floatWin" title="Drag me around!">
-        <div class="pet-box pet-wrap" id="fwPet">
-          <svg class="pet pet-cat" viewBox="0 0 140 100"><g fill="#f0a35e"><path d="M112 74 C134 66 134 40 118 34" fill="none" stroke="#f0a35e" stroke-width="9" stroke-linecap="round"/><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 24 L43 2 L63 13 Z"/><path d="M92 24 L97 2 L77 13 Z"/></g><path d="M50 20 L47 8 L58 14 Z" fill="#d97f4e"/><path d="M90 20 L93 8 L82 14 Z" fill="#d97f4e"/><ellipse class="eye" cx="60" cy="34" rx="3.4" ry="5" fill="#3a241a"/><ellipse class="eye" cx="80" cy="34" rx="3.4" ry="5" fill="#3a241a"/><path d="M66.5 42 h7 l-3.5 4.5 Z" fill="#3a241a"/><path d="M70 46.5 q0 4.5 -5.5 4.5 M70 46.5 q0 4.5 5.5 4.5" stroke="#3a241a" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M42 38 h-12 M42 44 l-11 3 M98 38 h12 M98 44 l11 3" stroke="#d97f4e" stroke-width="1.8" opacity=".6" stroke-linecap="round"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#f7c894"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
-          <svg class="pet pet-frog" viewBox="0 0 140 100"><g fill="#79c267"><ellipse cx="70" cy="66" rx="46" ry="28"/><circle cx="48" cy="30" r="15"/><circle cx="92" cy="30" r="15"/></g><circle class="eye" cx="48" cy="27" r="6" fill="#1c2a14"/><circle class="eye" cx="92" cy="27" r="6" fill="#1c2a14"/><ellipse cx="70" cy="74" rx="26" ry="14" fill="#a8dd8f"/><path d="M42 64 Q70 82 98 64" stroke="#1c2a14" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="62" cy="50" r="2" fill="#1c2a14"/><circle cx="78" cy="50" r="2" fill="#1c2a14"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#a8dd8f"><ellipse class="paw-a" cx="48" cy="84" rx="12" ry="8"/><ellipse class="paw-b" cx="92" cy="84" rx="12" ry="8"/></g></svg>
-          <svg class="pet pet-siba" viewBox="0 0 140 100"><path d="M108 66 C132 58 130 30 112 26" fill="none" stroke="#e8b57f" stroke-width="10" stroke-linecap="round"/><g fill="#e8b57f"><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 22 L40 0 L62 11 Z"/><path d="M92 22 L100 0 L78 11 Z"/></g><path d="M50 17 L45 6 L58 12 Z" fill="#c98f52"/><path d="M90 17 L95 6 L82 12 Z" fill="#c98f52"/><ellipse cx="70" cy="42" rx="15" ry="12" fill="#fdf0dc"/><ellipse class="eye" cx="60" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><ellipse class="eye" cx="80" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><path d="M66 42 h8 l-4 5 Z" fill="#3a241a"/><path d="M70 47 q0 5 -6 5 M70 47 q0 5 6 5" stroke="#3a241a" stroke-width="2.2" fill="none" stroke-linecap="round"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#fdf0dc"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
-          <svg class="fw-heart" aria-hidden="true"><use href="#heart-shape"/></svg>
+        <div class="pet-box" id="fwPet">
+          <img class="pet-img" id="fwPetImg" src="assets/cat_idle.png" alt="Your TypeMeow companion" draggable="false">
+          <svg class="heart-badge"><use href="#heart-shape"/></svg>
           <span class="zzz">z<span style="font-size:.7em">z</span></span>
         </div>
         <p class="caption">큰 미리보기 · drag me ✋</p>
@@ -403,10 +387,8 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
       </div>
       <div class="gauge"><div class="gauge-fill" id="gaugeFill"></div></div>
       <div class="pg-pet">
-        <div class="pet-box pet-wrap is-idle" id="pgPet">
-          <svg class="pet pet-cat" viewBox="0 0 140 100"><g fill="#f0a35e"><path d="M112 74 C134 66 134 40 118 34" fill="none" stroke="#f0a35e" stroke-width="9" stroke-linecap="round"/><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 24 L43 2 L63 13 Z"/><path d="M92 24 L97 2 L77 13 Z"/></g><path d="M50 20 L47 8 L58 14 Z" fill="#d97f4e"/><path d="M90 20 L93 8 L82 14 Z" fill="#d97f4e"/><ellipse class="eye" cx="60" cy="34" rx="3.4" ry="5" fill="#3a241a"/><ellipse class="eye" cx="80" cy="34" rx="3.4" ry="5" fill="#3a241a"/><path d="M66.5 42 h7 l-3.5 4.5 Z" fill="#3a241a"/><path d="M70 46.5 q0 4.5 -5.5 4.5 M70 46.5 q0 4.5 5.5 4.5" stroke="#3a241a" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M42 38 h-12 M42 44 l-11 3 M98 38 h12 M98 44 l11 3" stroke="#d97f4e" stroke-width="1.8" opacity=".6" stroke-linecap="round"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#f7c894"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
-          <svg class="pet pet-frog" viewBox="0 0 140 100"><g fill="#79c267"><ellipse cx="70" cy="66" rx="46" ry="28"/><circle cx="48" cy="30" r="15"/><circle cx="92" cy="30" r="15"/></g><circle class="eye" cx="48" cy="27" r="6" fill="#1c2a14"/><circle class="eye" cx="92" cy="27" r="6" fill="#1c2a14"/><ellipse cx="70" cy="74" rx="26" ry="14" fill="#a8dd8f"/><path d="M42 64 Q70 82 98 64" stroke="#1c2a14" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="62" cy="50" r="2" fill="#1c2a14"/><circle cx="78" cy="50" r="2" fill="#1c2a14"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#a8dd8f"><ellipse class="paw-a" cx="48" cy="84" rx="12" ry="8"/><ellipse class="paw-b" cx="92" cy="84" rx="12" ry="8"/></g></svg>
-          <svg class="pet pet-siba" viewBox="0 0 140 100"><path d="M108 66 C132 58 130 30 112 26" fill="none" stroke="#e8b57f" stroke-width="10" stroke-linecap="round"/><g fill="#e8b57f"><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 22 L40 0 L62 11 Z"/><path d="M92 22 L100 0 L78 11 Z"/></g><path d="M50 17 L45 6 L58 12 Z" fill="#c98f52"/><path d="M90 17 L95 6 L82 12 Z" fill="#c98f52"/><ellipse cx="70" cy="42" rx="15" ry="12" fill="#fdf0dc"/><ellipse class="eye" cx="60" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><ellipse class="eye" cx="80" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><path d="M66 42 h8 l-4 5 Z" fill="#3a241a"/><path d="M70 47 q0 5 -6 5 M70 47 q0 5 6 5" stroke="#3a241a" stroke-width="2.2" fill="none" stroke-linecap="round"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#fdf0dc"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
+        <div class="pet-box is-idle" id="pgPet">
+          <img class="pet-img" id="pgPetImg" src="assets/cat_idle.png" alt="" draggable="false">
         </div>
       </div>
     </div>
@@ -431,10 +413,9 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
       </div>
       <div class="pomo-bar"><div class="pomo-bar-fill" id="pomoBar"></div></div>
       <div class="pomo-cat-row">
-        <div class="pet-box pet-wrap" id="pomoPet">
-          <svg class="pet pet-cat" viewBox="0 0 140 100"><g fill="#f0a35e"><path d="M112 74 C134 66 134 40 118 34" fill="none" stroke="#f0a35e" stroke-width="9" stroke-linecap="round"/><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 24 L43 2 L63 13 Z"/><path d="M92 24 L97 2 L77 13 Z"/></g><path d="M50 20 L47 8 L58 14 Z" fill="#d97f4e"/><path d="M90 20 L93 8 L82 14 Z" fill="#d97f4e"/><ellipse class="eye" cx="60" cy="34" rx="3.4" ry="5" fill="#3a241a"/><ellipse class="eye" cx="80" cy="34" rx="3.4" ry="5" fill="#3a241a"/><path d="M66.5 42 h7 l-3.5 4.5 Z" fill="#3a241a"/><path d="M70 46.5 q0 4.5 -5.5 4.5 M70 46.5 q0 4.5 5.5 4.5" stroke="#3a241a" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#f7c894"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
-          <svg class="pet pet-frog" viewBox="0 0 140 100"><g fill="#79c267"><ellipse cx="70" cy="66" rx="46" ry="28"/><circle cx="48" cy="30" r="15"/><circle cx="92" cy="30" r="15"/></g><circle class="eye" cx="48" cy="27" r="6" fill="#1c2a14"/><circle class="eye" cx="92" cy="27" r="6" fill="#1c2a14"/><ellipse cx="70" cy="74" rx="26" ry="14" fill="#a8dd8f"/><path d="M42 64 Q70 82 98 64" stroke="#1c2a14" stroke-width="3.5" fill="none" stroke-linecap="round"/><g fill="#a8dd8f"><ellipse class="paw-a" cx="48" cy="84" rx="12" ry="8"/><ellipse class="paw-b" cx="92" cy="84" rx="12" ry="8"/></g></svg>
-          <svg class="pet pet-siba" viewBox="0 0 140 100"><path d="M108 66 C132 58 130 30 112 26" fill="none" stroke="#e8b57f" stroke-width="10" stroke-linecap="round"/><g fill="#e8b57f"><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 22 L40 0 L62 11 Z"/><path d="M92 22 L100 0 L78 11 Z"/></g><ellipse cx="70" cy="42" rx="15" ry="12" fill="#fdf0dc"/><ellipse class="eye" cx="60" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><ellipse class="eye" cx="80" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><path d="M66 42 h8 l-4 5 Z" fill="#3a241a"/><g fill="#fdf0dc"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
+        <div class="pet-box" id="pomoPet">
+          <img class="pet-img" id="pomoPetImg" src="assets/cat_left.png" alt="" draggable="false">
+          <svg class="heart-badge"><use href="#heart-shape"/></svg>
         </div>
       </div>
       <p class="pomo-cap">a 12-second loop of the real 25-minute cycle</p>
@@ -454,10 +435,8 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
       </div>
     </div>
     <div class="animal-stage">
-      <div class="pet-box pet-wrap is-typing" aria-hidden="true">
-        <svg class="pet pet-cat" viewBox="0 0 140 100"><g fill="#f0a35e"><path d="M112 74 C134 66 134 40 118 34" fill="none" stroke="#f0a35e" stroke-width="9" stroke-linecap="round"/><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 24 L43 2 L63 13 Z"/><path d="M92 24 L97 2 L77 13 Z"/></g><path d="M50 20 L47 8 L58 14 Z" fill="#d97f4e"/><path d="M90 20 L93 8 L82 14 Z" fill="#d97f4e"/><ellipse class="eye" cx="60" cy="34" rx="3.4" ry="5" fill="#3a241a"/><ellipse class="eye" cx="80" cy="34" rx="3.4" ry="5" fill="#3a241a"/><path d="M66.5 42 h7 l-3.5 4.5 Z" fill="#3a241a"/><path d="M70 46.5 q0 4.5 -5.5 4.5 M70 46.5 q0 4.5 5.5 4.5" stroke="#3a241a" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M42 38 h-12 M42 44 l-11 3 M98 38 h12 M98 44 l11 3" stroke="#d97f4e" stroke-width="1.8" opacity=".6" stroke-linecap="round"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#f7c894"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
-        <svg class="pet pet-frog" viewBox="0 0 140 100"><g fill="#79c267"><ellipse cx="70" cy="66" rx="46" ry="28"/><circle cx="48" cy="30" r="15"/><circle cx="92" cy="30" r="15"/></g><circle class="eye" cx="48" cy="27" r="6" fill="#1c2a14"/><circle class="eye" cx="92" cy="27" r="6" fill="#1c2a14"/><ellipse cx="70" cy="74" rx="26" ry="14" fill="#a8dd8f"/><path d="M42 64 Q70 82 98 64" stroke="#1c2a14" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="62" cy="50" r="2" fill="#1c2a14"/><circle cx="78" cy="50" r="2" fill="#1c2a14"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#a8dd8f"><ellipse class="paw-a" cx="48" cy="84" rx="12" ry="8"/><ellipse class="paw-b" cx="92" cy="84" rx="12" ry="8"/></g></svg>
-        <svg class="pet pet-siba" viewBox="0 0 140 100"><path d="M108 66 C132 58 130 30 112 26" fill="none" stroke="#e8b57f" stroke-width="10" stroke-linecap="round"/><g fill="#e8b57f"><ellipse cx="70" cy="68" rx="42" ry="27"/><circle cx="70" cy="36" r="26"/><path d="M48 22 L40 0 L62 11 Z"/><path d="M92 22 L100 0 L78 11 Z"/></g><path d="M50 17 L45 6 L58 12 Z" fill="#c98f52"/><path d="M90 17 L95 6 L82 12 Z" fill="#c98f52"/><ellipse cx="70" cy="42" rx="15" ry="12" fill="#fdf0dc"/><ellipse class="eye" cx="60" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><ellipse class="eye" cx="80" cy="33" rx="3.2" ry="4.6" fill="#3a241a"/><path d="M66 42 h8 l-4 5 Z" fill="#3a241a"/><path d="M70 47 q0 5 -6 5 M70 47 q0 5 6 5" stroke="#3a241a" stroke-width="2.2" fill="none" stroke-linecap="round"/><rect x="24" y="86" width="92" height="11" rx="3.5" fill="#3a2a20"/><g fill="#fdf0dc"><ellipse class="paw-a" cx="52" cy="84" rx="12" ry="9"/><ellipse class="paw-b" cx="88" cy="84" rx="12" ry="9"/></g></svg>
+      <div class="pet-box" id="stagePet">
+        <img class="pet-img" id="stagePetImg" src="assets/cat_left.png" alt="" draggable="false">
       </div>
       <div id="animalName">CAT</div>
       <div id="animalFlavor">The classic. Judges your KPM silently, supports you anyway.</div>
@@ -512,22 +491,69 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
 (function(){
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
-  var petWraps = [$('mbPet'), $('pgPet'), $('fwPet')];
 
-  /* ── live KPM engine (mirrors the app's sliding window) ── */
-  var keyTimes = [], lastKeyAt = 0, idleTimer = null;
+  /* ── pet frame engine — same naming as the app's currentAssetName() ── */
+  var STATES = ['idle','idle_1','left','left_crazy','left_hard','right','right_crazy','right_hard'];
+  ['cat','frog','siba'].forEach(function(a){
+    STATES.forEach(function(s){
+      new Image().src = 'assets/' + a + '_' + s + '.png';
+      new Image().src = 'assets/' + a + '_icon_' + s + '.png';
+    });
+  });
+
+  var animal = 'cat';
+  function frameSrc(set, st){
+    var prefix = animal + (set === 'icon' ? '_icon_' : '_');
+    if (st.typing){
+      var suf = st.mode === 'crazy' ? '_crazy' : st.mode === 'hard' ? '_hard' : '';
+      return prefix + (st.frame === 1 ? 'left' : 'right') + suf + '.png';
+    }
+    return prefix + (st.blink === 0 ? 'idle' : 'idle_1') + '.png';
+  }
+
+  /* live pets driven by the visitor's real typing: menu bar, playground, float window */
+  var live = {
+    typing:false, frame:1, mode:'normal', blink:0, lastKey:0
+  };
+  var livePets = [
+    {img:$('mbPetImg'), box:$('mbPet'), set:'icon'},
+    {img:$('pgPetImg'), box:$('pgPet'), set:'detail'},
+    {img:$('fwPetImg'), box:$('fwPet'), set:'detail'}
+  ];
+  function renderLive(){
+    livePets.forEach(function(p){
+      var src = 'assets/' + frameSrc(p.set, live);
+      if (p.img.getAttribute('src') !== src) p.img.src = src;
+      p.box.classList.toggle('is-idle', !live.typing);
+      p.box.classList.toggle('mode-hard', live.typing && live.mode==='hard');
+      p.box.classList.toggle('mode-crazy', live.typing && live.mode==='crazy');
+    });
+  }
 
   document.addEventListener('keydown', function(e){
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key.length !== 1 && e.key !== 'Enter' && e.key !== 'Backspace' && e.key !== ' ') return;
-    var t = Date.now();
-    keyTimes.push(t);
-    lastKeyAt = t;
-    petWraps.forEach(function(w){ w.classList.add('is-typing'); w.classList.remove('is-idle'); });
+    live.typing = true;
+    live.frame = live.frame === 1 ? 2 : 1;   // left ↔ right, exactly like the app
+    live.lastKey = Date.now();
+    renderLive();
+  });
+
+  /* idle blink — toggle idle ↔ idle_1 every 1.8s while not typing */
+  setInterval(function(){
+    if (live.typing) return;
+    live.blink = live.blink === 0 ? 1 : 0;
+    renderLive();
+  }, 1800);
+
+  /* ── live KPM engine (mirrors the app's sliding window) ── */
+  var keyTimes = [], idleTimer = null;
+  document.addEventListener('keydown', function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key.length !== 1 && e.key !== 'Enter' && e.key !== 'Backspace' && e.key !== ' ') return;
+    keyTimes.push(Date.now());
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(function(){
-      petWraps.forEach(function(w){ w.classList.remove('is-typing'); w.classList.add('is-idle'); });
-    }, 2200);
+    idleTimer = setTimeout(function(){ live.typing = false; renderLive(); }, 2200);
   });
 
   var modeBadge = $('modeBadge'), gaugeFill = $('gaugeFill');
@@ -548,6 +574,8 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
     if (modeBadge.textContent !== mode[1]) modeBadge.textContent = mode[1];
     document.body.classList.remove('mode-normal','mode-hard','mode-crazy');
     document.body.classList.add(mode[2]);
+    var newMode = mode[2].replace('mode-','');
+    if (newMode !== live.mode){ live.mode = newMode; if (live.typing) renderLive(); }
   }, 200);
 
   /* ── menu bar clock ── */
@@ -581,21 +609,47 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   /* ── pomodoro demo loop (12s = 25min work + 5min rest) ── */
   var pomoStart = Date.now(), CYCLE = 12000, WORK = 7200;
   var pomoDemo = $('pomoDemo'), pomoBar = $('pomoBar'), pomoStatus = $('pomoStatus');
+  var pomoImg = $('pomoPetImg'), pomoPet = $('pomoPet'), pomoFrame = 1, wasResting = false;
   function fmt(s){ return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
   setInterval(function(){
     var t = (Date.now() - pomoStart) % CYCLE;
     var resting = t >= WORK;
     pomoDemo.classList.toggle('resting', resting);
     document.body.classList.toggle('pomo-rest', resting);
+    pomoPet.classList.toggle('show-heart', resting);
     if (!resting){
+      if (wasResting){ pomoImg.src = 'assets/' + animal + '_idle.png'; wasResting = false; }
       pomoBar.style.width = (t/WORK*100) + '%';
       pomoStatus.textContent = 'Focus · ' + fmt(Math.ceil((1 - t/WORK) * 25 * 60));
     } else {
+      if (!wasResting){ pomoImg.src = 'assets/' + animal + '_idle.png'; wasResting = true; }
       var f = (t - WORK) / (CYCLE - WORK);
       pomoBar.style.width = ((1-f)*100) + '%';
       pomoStatus.textContent = 'Resting · ' + fmt(Math.ceil((1 - f) * 5 * 60));
     }
   }, 120);
+  /* demo cat "types" during the work phase */
+  setInterval(function(){
+    var t = (Date.now() - pomoStart) % CYCLE;
+    if (t < WORK){
+      pomoFrame = pomoFrame === 1 ? 2 : 1;
+      pomoImg.src = 'assets/' + animal + '_' + (pomoFrame === 1 ? 'left' : 'right') + '.png';
+    }
+  }, 300);
+
+  /* ── animal stage: always-alive showcase typing loop ── */
+  var stageImg = $('stagePetImg'), stageFrame = 1, stageMode = 'normal', stageTick = 0;
+  setInterval(function(){
+    stageTick++;
+    /* cycle modes: mostly normal, sometimes hard, briefly crazy */
+    var phase = stageTick % 40;
+    stageMode = phase >= 34 ? 'crazy' : phase >= 24 ? 'hard' : 'normal';
+    stageFrame = stageFrame === 1 ? 2 : 1;
+    var suf = stageMode === 'crazy' ? '_crazy' : stageMode === 'hard' ? '_hard' : '';
+    stageImg.src = 'assets/' + animal + '_' + (stageFrame === 1 ? 'left' : 'right') + suf + '.png';
+    $('stagePet').classList.toggle('mode-hard', stageMode === 'hard');
+    $('stagePet').classList.toggle('mode-crazy', stageMode === 'crazy');
+  }, 260);
 
   /* ── animal switcher ── */
   var flavors = {
@@ -605,13 +659,14 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   };
   document.querySelectorAll('.animal-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
-      document.body.dataset.animal = btn.dataset.animal;
+      animal = btn.dataset.animal;
       document.querySelectorAll('.animal-btn').forEach(function(b){
         b.classList.toggle('active', b === btn);
         b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
       });
-      $('animalName').textContent = btn.dataset.animal.toUpperCase();
-      $('animalFlavor').textContent = flavors[btn.dataset.animal];
+      $('animalName').textContent = animal.toUpperCase();
+      $('animalFlavor').textContent = flavors[animal];
+      renderLive();
     });
   });
 
@@ -642,6 +697,8 @@ footer h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:18ch}
   /* ── duplicate marquee content for seamless loop ── */
   var track = $('marqueeTrack');
   track.innerHTML += track.innerHTML;
+
+  renderLive();
 })();
 </script>
 </body>
